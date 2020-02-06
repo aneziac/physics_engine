@@ -2,8 +2,7 @@ import pygame as pg
 import sys
 import time
 import random as rm
-from math import sqrt, floor
-from numpy import sign
+from math import sqrt, floor, ceil
 
 
 def engine():
@@ -19,6 +18,21 @@ def engine():
     SCREEN.fill((255, 255, 255))  # white screen
     pg.display.set_caption("physics_engine v.0.1")
     font = pg.font.Font(None, 30)
+    
+    #list of constants
+    gc = 1 #gravitational constant
+    em = 1000 #earth's mass (kg)
+    er = 40 #earth's radius (m)
+    
+    # QIV -> QI transformations
+    def trect(coords):  # transform rectangle (4 inputs)
+        return (coords[0]+coords[2], SCR_HEIGHT-coords[1], -1*coords[2], -1*coords[3])
+
+    def tcirc(coords):  # transform circle (2 inputs)
+        return (coords[0], SCR_HEIGHT-coords[1])
+
+    def rect(coords):  # quickly draw a black rectangle
+        pg.draw.rect(SCREEN, (0, 0, 0), trect(coords))
 
     # defines properties of all objects
     class Object():
@@ -58,7 +72,6 @@ def engine():
 
     class SObject(Object):  # "Space" objects
         bodies = []
-        gc = 1
 
         def __init__(self, x, y, xv, yv, m, c, xa, ya):
             super().__init__(x, y, xv, yv, m, c, xa, ya)
@@ -66,59 +79,71 @@ def engine():
 
         def update(self):
             for obj in SObject.bodies:
-                if self.x == obj.x and self.y == obj.y:
-                    pass
-                else:
-                    self.a = (SObject.gc * obj.m) / ((self.x-obj.x)**2 + (self.y-obj.y)**2)
-                    self.xa += self.a*((obj.x-self.x)/200)
-                    self.ya += self.a*((obj.y-self.y)/200)
+                if self.x != obj.x and self.y != obj.y:
+                    #calculates magnitude of acceleration vector
+                    self.am = -1 * (gc * obj.m) / sqrt((self.x-obj.x)**2 + (self.y-obj.y)**2)                    
+                    #calculates acceleration vector
+                    self.xa = self.am*((self.x-obj.x)/sqrt((self.x-obj.x)**2 + (self.y-obj.y)**2))
+                    self.ya = self.am*((self.y-obj.y)/sqrt((self.x-obj.x)**2 + (self.y-obj.y)**2))            
             super().update()
 
     class Satellite(SObject):
         def __init__(self, x, y, xv, yv, m, c, xa, ya, r):
             super().__init__(x, y, xv, yv, m, c, xa, ya)
             self.r = round((r*SCR_HEIGHT)/WLD_HEIGHT)  # radius
+            self.b = -0.8
 
         def update(self):
             super().update()
-            pg.draw.circle(SCREEN, self.c, tcirc((self.x, self.y)), self.r)
-            #print (self.xa)
-            #self.xa = -1*(((self.x)-200)/150)
-            #self.ya = -1*(((self.y)-200)/150)
-            for obj in SObject.bodies:
-                if self.x != obj.x and self.y != obj.y:
-                    if sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2)) < max(self.r, obj.r):
-                        self.xv *= -0.8
-                        self.yv *= -0.8
-                        self.xa = 0
-                        self.ya = 0
+            
+            #make this a function later
 
-    #sat = Satellite(200,380,15,0,0,(0,0,0),0,-1,5)
-    sat1 = Satellite(200, 380, 0, 0, 10, (0, 0, 0), 0, 0, 5)
-    sat2 = Satellite(100, 50, 0, 0, 20, (0, 0, 0), 0, 0, 10)
+            for obj in SObject.bodies:
+                if self.x != obj.x and self.y != obj.y and sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2)) < (self.r + obj.r):
+                    
+                    self.p = round(sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2)),3)
+
+                    # calculates the coordinates of the furthest intersecting point for each ball
+                    self.sintx, self.sinty = self.x + ((self.r * (obj.x - self.x))/self.p), self.y + ((self.r * (obj.y - self.y))/self.p)  # self intersection
+                    self.ointx, self.ointy = obj.x + ((obj.r * (self.x - obj.x))/self.p), obj.y + ((obj.r * (self.y - obj.y))/self.p)  # obj intersection
+
+                    # calculates the distance between the intersecting points and creates move values
+                    self.h = sqrt((self.sintx - self.ointx) ** 2 + (self.sinty - self.ointy) ** 2) / 2
+                    self.movex, self.movey = floor((self.h * (self.x-obj.x)) / self.p)-1, floor((self.h * (self.y-obj.y)) / self.p)
+
+                    # moves the objects accordingly
+                    self.x += self.movex
+                    obj.x += self.movex * -1
+                    self.y += self.movey
+                    obj.y += self.movey * -1
+                    self.xv *= self.b
+                    self.yv *= self.b
+            
+            pg.draw.circle(SCREEN, self.c, tcirc((self.x, self.y)), self.r)
+
+    #sat1 = Satellite(200, 380, 0, 0, 5, (0, 0, 0), 0, 0, 5)
+    #sat2 = Satellite(100, 50, 0, 0, 30, (0, 0, 0), 0, 0, 10)
 
     class EObject(Object):  # "Earth" objects
         instances = []
-
-        # physical settings
-        b = -0.8  # bounciness
 
         def __init__(self, x, y, xv, yv, m, c, xa, ya):
             super().__init__(x, y, xv, yv, m, c, xa, ya)
             EObject.instances.append(self)
 
         def update(self):
-            super().update()
             self.xv += round((rm.random()*2)-1, 2)
+            super().update()
 
         def reset(self):
             super().reset()
-            self.ya = -0.8  # gravity setting -0.5
+            self.ya = -(gc*em)/(er**2)  # gravity setting -0.5
 
     class Ball(EObject):
-        def __init__(self, x, y, xv, yv, m, c, xa, ya, r):
+        def __init__(self, x, y, xv, yv, m, c, xa, ya, r, b):
             super().__init__(x, y, xv, yv, m, c, xa, ya)
             self.r = round((r*SCR_HEIGHT)/WLD_HEIGHT)  # radius
+            self.b = -1 * b #bounciness
 
         def update(self):
             super().update()
@@ -126,42 +151,43 @@ def engine():
             # object to object collisions
             for obj in EObject.instances:
                 # if the balls are intersecting
-                if self.x != obj.x and self.y != obj.y and sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2)) <= self.r + obj.r:
-                    # pg.draw.circle(SCREEN,(255,0,0),tcirc((self.x,self.y)),self.r)
+                if self.x != obj.x and self.y != obj.y and ceil(sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2))) <= (self.r + obj.r):
+                    
+                    #print(round(sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2)) - (self.r+obj.r)), " before ",end='')
 
                     # calculates distance between centers of balls
-                    self.p = sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2))
+                    self.p = round(sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2)),3)
 
                     # calculates the coordinates of the furthest intersecting point for each ball
-                    self.sintx, self.sinty = self.x + (((self.r * abs(obj.x - self.x))/self.p) * sign(obj.x - self.x)), self.y + (((self.r * abs(obj.y - self.y))/self.p) * sign(obj.y - self.y))  # self intersection
-                    self.ointx, self.ointy = self.x + (((obj.r * abs(obj.x - self.x))/self.p) * sign(obj.x - self.x)), self.y + (((obj.r * abs(obj.y - self.y))/self.p) * sign(obj.y - self.y))  # obj intersection
+                    self.sintx, self.sinty = self.x + ((self.r * (obj.x - self.x))/self.p), self.y + ((self.r * (obj.y - self.y))/self.p)  # self intersection
+                    self.ointx, self.ointy = obj.x + ((obj.r * (self.x - obj.x))/self.p), obj.y + ((obj.r * (self.y - obj.y))/self.p)  # obj intersection
 
                     # calculates the distance between the intersecting points and creates move values
                     self.h = sqrt((self.sintx - self.ointx) ** 2 + (self.sinty - self.ointy) ** 2) / 2
-                    self.movex, self.movey = (self.h * abs(obj.x-self.x)) / self.p, (self.h * abs(obj.y-self.y)) / self.p
+                    self.movex, self.movey = ceil((self.h * (self.x-obj.x)) / self.p), ceil((self.h * (self.y-obj.y)) / self.p)
 
                     # moves the objects accordingly
-                    self.x += floor(self.movex * sign(self.x - obj.x))
-                    obj.x += floor(self.movex * sign(obj.x - self.x))
-                    self.y += floor(self.movey * sign(self.y - obj.y))
-                    obj.y += floor(self.movey * sign(obj.y - self.y))
-                    self.xv *= EObject.b
-                    self.yv *= EObject.b
-                    print(round(sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2)) - (self.r+obj.r)))
-                    # pg.draw.circle(SCREEN,(255,0,0),tcirc((self.x,self.y)),self.r)
+                    self.x += self.movex
+                    obj.x += self.movex * -1
+                    self.y += self.movey
+                    obj.y += self.movey * -1
+                    self.xv *= self.b
+                    self.yv *= self.b
+                    
+                    #print(round(sqrt(((self.x-obj.x)**2 + (self.y-obj.y)**2)) - (self.r+obj.r))," after")
 
             # side wall collisions
             if self.x <= self.r:
                 self.x = self.r
-                self.xv *= EObject.b
+                self.xv *= self.b
             elif self.x >= (SCR_WIDTH-self.r):
                 self.x = SCR_WIDTH-self.r
-                self.xv *= EObject.b
+                self.xv *= self.b
 
             # ground collisons
             if self.y <= self.r:
                 self.y = self.r
-                self.yv *= EObject.b
+                self.yv *= self.b
 
             pg.draw.circle(SCREEN, self.c, tcirc((self.x, self.y)), self.r)
 
@@ -174,18 +200,8 @@ def engine():
         def update(self):
             super().update()
 
-    ball_1 = Ball(200, 390, 0, 0, 0, (0, 255, 0), 0, 0, 10)
-    ball_2 = Ball(350, 390, 0, 0, 0, (0, 0, 255), 0, 0, 5)
-
-    # QIV -> QI transformations
-    def trect(coords):  # transform rectangle (4 inputs)
-        return (coords[0]+coords[2], SCR_HEIGHT-coords[1], -1*coords[2], -1*coords[3])
-
-    def tcirc(coords):  # transform circle (2 inputs)
-        return (coords[0], SCR_HEIGHT-coords[1])
-
-    def rect(coords):  # quickly draw a black rectangle
-        pg.draw.rect(SCREEN, (0, 0, 0), trect(coords))
+    ball_1 = Ball(200, 390, 0, 0, 0, (0, 255, 0), 0, 0, 10, 0.6)
+    ball_2 = Ball(350, 390, 0, 0, 0, (0, 0, 255), 0, 0, 5, 0.8)
 
     Object.reset_all()
 
