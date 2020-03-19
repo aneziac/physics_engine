@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm -rf ./event_logs
+mkdir event_logs
