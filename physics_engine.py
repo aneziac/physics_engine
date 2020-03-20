@@ -2,8 +2,7 @@ import pygame as pg
 import random as rm
 from math import sqrt, pi
 from numpy import sign
-import common as cm
-import settings as st
+from data import common as cm, settings as st
 
 # independent universal constants
 gc = 0.000000000066743  # gravitational constant
@@ -63,7 +62,7 @@ class Object():
     def render_vectors(self):
         pg.draw.line(cm.SCREEN, (255, 100, 0), cm.tcirc((super().scl(self.x), super().scl(self.y))), cm.tcirc((super().scl(self.x + (self.xa)), super().scl(self.y + (self.ya)))), 3)
         pg.draw.line(cm.SCREEN, (2, 100, 100), cm.tcirc((super().scl(self.x), super().scl(self.y))), cm.tcirc((super().scl(self.x + (self.xv)), super().scl(self.y + (self.yv)))), 3)
-        
+
     def scl(self, x):
         return int((x * st.SCR_HEIGHT) / cm.wld_height)
 
@@ -80,21 +79,20 @@ class SPhysics():  # Space physics
                     self.ya = self.am * ((self.y - obj.y) / sqrt((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2))
 
 class EPhysics():  # Earth physics
-    def __init__(self, dc, ra, m):
+    def __init__(self, dc, ra):
         self.dc = dc  # drag coefficient
         self.ra = ra  # reference area
-        #self.w = eg * m # weight
 
     def physics(self, dt):
         # gravity
         self.ya = -eg
         # drag
-        self.xa = -((st.FLUID.d * (self.xv ** 2) * self.dc * self.ra) / 2) / self.m * sign(self.xv)
-        self.ya -= ((st.FLUID.d * (self.yv ** 2) * self.dc * self.ra) / 2) / self.m * sign(self.yv)
+        self.xa = -((cm.fluid.d * (self.xv ** 2) * self.dc * self.ra) / 2) / self.m * sign(self.xv)
+        self.ya -= ((cm.fluid.d * (self.yv ** 2) * self.dc * self.ra) / 2) / self.m * sign(self.yv)
         # buoyancy
-        self.ya += (self.v * st.FLUID.d * eg) / self.m
+        self.ya += (self.v * cm.fluid.d * eg) / self.m
         # random velocity changes to test collisions
-        #self.xv += ((rm.random() * 2) - 1) * 4
+        self.xv += ((rm.random() * 2) - 1) * 4
 
 class Sphere(Object):
     def __init__(self, name, pos, vel, acc, mat, c, e, r):
@@ -146,7 +144,7 @@ class Sphere(Object):
 class Ball(Sphere, EPhysics):
     def __init__(self, name, pos, vel, acc, mat, c, e, r):
         Sphere.__init__(self, name, pos, vel, acc, mat, c, e, r)
-        EPhysics.__init__(self, 0.47, round(pi * (self.r ** 2), 2), mat)
+        EPhysics.__init__(self, 0.47, round(pi * (self.r ** 2)))
 
     def update(self, dt):
         super().update(dt)

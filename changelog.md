@@ -1,3 +1,6 @@
+# Version 0.3.2 - 2020.3.20
+- Reorganization of files, bugfixing
+
 # Version 0.3.1 - 2020.3.19
 - Minor bugfixing and cleaning
 

@@ -1,6 +1,6 @@
 import menu
 import physics_engine as pe
-import materials as mat
+from data import materials as mat, common as cm
 
 SIM_NAMES = ["Earth 01", "Space 01"] # simulation names
 SIM_TYPES = ["Earth", "Space"]
@@ -12,6 +12,7 @@ if SIM == 0:
     pe.Ball("ball 3", [10, 50], [0, 0], [0, 0], mat.Aluminum, (255, 0, 0), 0.6, 0.5)
     pe.Ball("ball 4", [30, 50], [0, 0], [0, 0], mat.Gold, (100, 50, 0), 0.6, 3)
     SIM_TYPE = SIM_TYPES.index("Earth")
+    cm.fluid = mat.Air
 
 elif SIM == 1:
     # implement camera later

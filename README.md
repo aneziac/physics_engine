@@ -2,11 +2,10 @@
 
 **physics_engine** is a 2D physics engine and editor featuring simulations at multiple scales. It was created as a hobbyist project.
 
-Documentation is currently largely incomplete due to the rapidly changing nature of the project.
-
-Time controls are a work in progress to be fixed soon.
-
 # Features
-- Time controls
+- Time controls (Note that this is a work in progress to be fixed soon.)
 - Customizable objects
 - Laws of physics including orbits, drag, conservation of momentum, buoyancy etc.
+
+# Running
+To run the engine, simply run ``main.py``. General settings can be changed in ``data/settings.py`` and the simulation can be changed in ``data/sims.py``. You can change which material is used for each object by selecting one from ``data/materials.py``. See the documentation for variable and function uses to customize simulations further.
