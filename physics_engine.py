@@ -42,7 +42,6 @@ class Object():
         self.m = self.mat.d * self.v # mass
         self.c = self.ic
         self.e = self.ie
-        #self.d = self.m / self.v # density
         self.eclock = 0
         self.equilibrium = False
         self.tyv = self.iyv
@@ -161,25 +160,23 @@ class Ball(Sphere, EPhysics):
             self.x = ((2 * cm.wld_width) - (2 * self.r) - self.x)
             self.xv *= self.e
             cm.events.append("Collision: %s on right wall at %.2f secs\n" % (self.name, cm.total_time))
-            
-        if self.name == "ball 2":
-            print(self.yv)
 
         # ground collisons
         if self.y <= self.r:
-            if self.yv * self.e * sign(dt) > -self.ya * dt * sign(dt) * 5 and not self.equilibrium:
+            if self.yv * self.e * sign(dt) > -self.ya * dt * sign(dt):
                 #if self.name == "ball 3": print((self.yv * sign(dt) * self.e) / (-self.ya * dt * sign(dt)))
-                self.yv *= self.e
                 self.tyv = self.yv
+                self.yv *= self.e
                 self.ty = self.y
                 self.y = 2 * self.r - (self.y)
+                cm.events.append("Collision: %s on ground at %.2f secs\n" % (self.name, cm.total_time))
 
             else:
                 self.eclock += dt
                 self.equilibrium = True
                 self.y = self.r
                 self.yv = 0
-            
+
             if self.eclock <= 0 and self.equilibrium:
                 self.eclock = 0
                 self.yv = self.tyv

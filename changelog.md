@@ -1,3 +1,6 @@
+# Version 0.3.1 - 2020.3.19
+- Minor bugfixing and cleaning
+
 # Version 0.3.0 - 2020.3.19
 - Buoyancy and drag
 - Separates files

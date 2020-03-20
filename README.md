@@ -1,6 +1,6 @@
 ![logo](assets/logo.png)
 
-physics_engine is a physics engine and editor featuring simulations at multiple scales. It was created as a hobbyist project.
+**physics_engine** is a 2D physics engine and editor featuring simulations at multiple scales. It was created as a hobbyist project.
 
 Documentation is currently largely incomplete due to the rapidly changing nature of the project.
 

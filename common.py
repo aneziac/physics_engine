@@ -16,4 +16,4 @@ events = []
 wld_height, wld_width = st.DWLD_HEIGHT, st.DWLD_HEIGHT
 SCREEN = pg.display.set_mode([st.SCR_WIDTH, st.SCR_HEIGHT])  # creates screen
 SCREEN.fill((255, 255, 255))  # blanks screen
-pg.display.set_caption("physics_engine v.0.3.0")
+pg.display.set_caption("physics_engine v.0.3.1")

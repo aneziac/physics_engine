@@ -77,12 +77,7 @@ def main():
             else:
                 cm.wld_width, cm.wld_height = st.DSPACE_WIDTH, st.DSPACE_HEIGHT * zooms[4]
 
-        if sims.SIM == 0:
-            cm.SCREEN.fill((0, 0, 0))
-            for x in range(st.STARS_AMOUNT):
-                pg.draw.circle(cm.SCREEN, (255, 255, 255), STARS[x][0], STARS[x][1])
-
-        elif sims.SIM == 1:
+        if sims.SIM_TYPE == 0:
             # builds Y-axis scale
             for x in range(st.TICK_MARKS):
                 a = x * round(st.SCR_HEIGHT / st.TICK_MARKS)
@@ -90,6 +85,11 @@ def main():
                     pg.draw.rect(cm.SCREEN, (240, 240, 240), cm.trect([0, a, st.SCR_WIDTH, st.SCR_HEIGHT/st.TICK_MARKS]))
                 cm.rect((0, a, 5, 2))
                 cm.SCREEN.blit(st.FONTS.render(str(int((x * cm.wld_height) / st.TICK_MARKS)) + " " + st.UNIT, True, pg.Color('black')), cm.trect((2, a + 13, 10, a)))
+
+        elif sims.SIM_TYPE == 1:
+            cm.SCREEN.fill((0, 0, 0))
+            for x in range(st.STARS_AMOUNT):
+                pg.draw.circle(cm.SCREEN, (255, 255, 255), STARS[x][0], STARS[x][1])
 
         if keys[pg.K_SPACE]:
             while pg.key.get_pressed()[pg.K_SPACE]:
@@ -121,7 +121,7 @@ def main():
         if pause:
             dt = 0
         else:
-            dt = 0.03 * sim_speed #(time.time() - elapsed) * sim_speed
+            dt = (time.time() - elapsed) * sim_speed
             elapsed = time.time()
 
         cm.total_time += dt
