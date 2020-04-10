@@ -1,26 +1,26 @@
 main.py
 =======
-For the core loop including keyboards. Also responsible for backgrounds.
+The core loop.
 
 Variables
 ---------
 
 Initial
 *******
-1. STARS
-2. elapsed
+- STARS
+- elapsed
     Used to find time since last frame.
-3. pause
+- pause
     Boolean that determines whether the engine is paused.
-4. data
+- data
     Datastream for event logs.
-5. PLAY
+- PLAY
     Stores play.png asset.
-6. PAUSE
+- PAUSE
     Stores pause.png asset.
-7. IPLAY
+- IPLAY
     Stores iplay.png asset.
-8. IPAUSE
+- IPAUSE
     Stores ipause.png asset.
 9. uicolor
     Determines whether to use black or white UI.

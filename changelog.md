@@ -1,3 +1,8 @@
+# Version 0.4.0 - 2020.4.10
+- Overhaul of project structure, including adding packages
+- Code is now fully object oriented
+- Vastly improved time controls
+
 # Version 0.3.2 - 2020.3.20
 - Reorganization of files, bugfixing
 

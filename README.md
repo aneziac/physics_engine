@@ -1,11 +1,27 @@
 ![logo](assets/logo.png)
 
-**physics_engine** is a 2D physics engine and editor featuring simulations at multiple scales. It was created as a hobbyist project.
+![version](https://img.shields.io/badge/version-0.4.0-blue)
+![MIT License](https://img.shields.io/badge/license-MIT-blue)
+
+**physics_engine** is a 2D physics engine and editor featuring simulations at multiple scales. 
+It was created as a hobbyist project.
 
 # Features
-- Time controls (Note that this is a work in progress to be fixed soon.)
+- Time controls (Note that this is still a work in progress.)
 - Customizable objects
 - Laws of physics including orbits, drag, conservation of momentum, buoyancy etc.
 
-# Running
-To run the engine, simply run ``main.py``. General settings can be changed in ``data/settings.py`` and the simulation can be changed in ``data/sims.py``. You can change which material is used for each object by selecting one from ``data/materials.py``. See the documentation for variable and function uses to customize simulations further.
+# Dependencies
+- [Pygame](https://www.pygame.org/)
+
+# Usage
+The engine can be run as a module with the following command:
+``$ python -m physics_engine``
+Dependencies should be installed automatically.
+
+# Configuration
+General settings can be changed in ``physics_engine/data/settings.py`` and the simulation parameters can be changed in ``physics_engine/data/sims.py``.
+See the documentation to customize simulations further.
+
+# License
+[MIT](https://choosealicense.com/licenses/mit/)

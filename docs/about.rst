@@ -1,5 +1,6 @@
 physics_engine Documentation
 ============================
-Each python file should have its own documentation explaining its functions, variables, and classes.
+Most python files (with trivial exceptions) should have their own documentation explaining their functions, variables, and classes.
 
-Documentation will likely be out of date or incomplete until the project's structure is finally settled on.
+Documentation will be out of date or incomplete until the project's structure is finally settled on.
+It should be fully updated by the 0.5.0 release.
