@@ -25,7 +25,7 @@ class Constants:
 
 class Physics():
     cons = Constants()
-    
+
     def __init__(self, pos, vel=[0, 0], acc=[0, 0]):
         # 'i' prefix means intial
         self.ipos = pos

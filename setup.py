@@ -17,8 +17,8 @@ setup(
     license=license,
     packages=find_packages(),
     classifiers=[
-    "Programming Language :: Python :: 3",
-    "Operating System :: OSX",
+        "Programming Language :: Python :: 3",
+        "Operating System :: OSX",
     ],
     python_requires='>=3.7'
 )
