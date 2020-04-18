@@ -1,5 +1,7 @@
 import random as rm
 from math import sqrt
+import pygame as pg
+import physics_engine.data.colors as colors
 
 
 class Constants:
@@ -23,6 +25,12 @@ class Constants:
 
 class Physics():
     cons = Constants()
+    
+    def __init__(self, pos, vel=[0, 0], acc=[0, 0]):
+        # 'i' prefix means intial
+        self.ipos = pos
+        self.ivel = vel
+        self.iacc = acc
 
     @staticmethod
     def physics_settings(fluid, temperature, gravity_catalyst):
@@ -30,14 +38,39 @@ class Physics():
         Physics.temperature = temperature
         Physics.gravity_catalyst = gravity_catalyst
 
+    def reset_physics(self):
+        self.x, self.y = self.ipos
+        self.xv, self.yv = self.ivel
+        self.xa, self.ya = self.iacc
+
     def physics(self, dt):
         self.xv += self.xa * dt
         self.yv += self.ya * dt
-        self.x += round(self.xv) * dt
-        self.y += round(self.yv) * dt
+        self.x += self.xv * dt
+        self.y += self.yv * dt
+
+    def collision(self, obj, colCOR):
+        self.xv = ((colCOR * obj.m) * (obj.xv - self.xv) + (self.m * self.xv) + (obj.m * obj.xv)) / (self.m + obj.m)
+        obj.xv = ((colCOR * self.m) * (self.xvo - obj.xv) + (self.m * self.xvo) + (obj.m * obj.xv)) / (self.m + obj.m)
+
+        if self.r != self.y or obj.r != obj.y:
+            self.yv = ((colCOR * obj.m) * (obj.yv - self.yv) + (self.m * self.yv) + (obj.m * obj.yv)) / (self.m + obj.m)
+            obj.yv = ((colCOR * self.m) * (self.yvo - obj.yv) + (self.m * self.yvo) + (obj.m * obj.yv)) / (self.m + obj.m)
+
+    def render_vectors(self, SCREEN, wld_dims):
+        def draw_line(a, b, color):
+            def scale(x):
+                return super().scl(x, wld_dims)
+            pg.draw.line(SCREEN, color, self.trans.tcirc(scale(self.x), scale(self.y), self.trans.tcirc(scale(self.x + a), scale(self.y + b))), 3)
+
+        draw_line(self.xv, self.yv, colors.ORANGE)
+        draw_line(self.xa, self.ya, colors.PURPLE)
 
 
-class SPhysics(Physics):  # Space physics
+class SpacePhysics(Physics):  # Space physics
+    def __init__(self, pos, vel, acc):
+        super().__init__(pos, vel, acc)
+
     def physics(self, dt, instances):
         super().physics(dt)
 
@@ -53,8 +86,9 @@ class SPhysics(Physics):  # Space physics
                     self.ya = self.am * ((self.y - obj.y) / sqrt((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2))
 
 
-class EPhysics(Physics):  # Earth physics
-    def __init__(self, dc, ra):
+class EarthPhysics(Physics):  # Earth physics
+    def __init__(self, pos, vel, acc, dc, ra):
+        super().__init__(pos, vel, acc)
         self.dc = dc  # drag coefficient
         self.ra = ra  # reference area
 

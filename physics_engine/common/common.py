@@ -74,5 +74,8 @@ class Clock:
         else:
             return 60
 
+    def current_time(self):
+        return time.ctime(time.time())
+
 
 clock = Clock(st.DEFAULT_SIM_SPEED)

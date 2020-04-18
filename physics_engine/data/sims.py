@@ -54,7 +54,7 @@ class Simulation:
 
         Simulation("Space 01", "Space", [400, 400], 100000, [
             # implement camera later
-            objs.Satellite("asteroid", [20, 200], [0, 1], [0, 0], mats.Asteroid, (61, 61, 41), 0.5, 3),
-            objs.Satellite("star", [200, 200], [0, 0], [0, 0], mats.Sun, (255, 204, 0), 0.5, 10),
+            objs.Satellite("asteroid", [20, 200], [0, 1], [0, 0], mats.Asteroid, colors.GRAY, 0.5, 3),
+            objs.Satellite("star", [200, 200], [0, 0], [0, 0], mats.Sun, colors.YELLOW, 0.5, 10),
             objs.Satellite("planet", [200, 350], [3, 0], [0, 0], mats.Rocky_Planet, colors.RED, 0.5, 5)],
         )

@@ -10,7 +10,7 @@ class Backgrounds:
 
         self.STARS = []
         for x in range(st.STARS_AMOUNT):
-            self.STARS.append([(rm.randint(0, st.SCR_WIDTH), rm.randint(0, st.SCR_HEIGHT)), rm.randint(2, 3)])
+            self.STARS.append([(rm.randint(0, st.SCR_WIDTH), rm.randint(0, st.SCR_HEIGHT)), rm.randint(2, 4)])
 
     def reset(self, sim_type):
         self.sim_type = sim_type

@@ -1,22 +1,13 @@
-import sys
-import os
-import time
-sys.path.append("...")
+# ---EXTERNAL---
+try:
+    import pygame as pg
+except ImportError:
+    print("Please install dependencies to use the software. Use 'make' to accomplish this.")
 
 # ---INTERNAL---
 from physics_engine.data import settings as st, sims, assets as at, objects
 from physics_engine.common import common as cm
 from physics_engine.loop import ui, backgrounds, controls
-
-# ---EXTERNAL---
-try:
-    import pygame as pg
-except ImportError:
-    os.system("make")
-
-# initializes pygame
-pg.init()
-pg.font.init()
 
 
 class Screen:
@@ -31,7 +22,6 @@ class Screen:
         self.UI = ui.UI()
         self.BACKGROUNDS = backgrounds.Backgrounds()
         self.reset()
-        print("Initialized\nRunning...")
 
     def render_physics(self, dt, wld_dims):
         for instance in objects.Object.instances:
@@ -57,7 +47,7 @@ class Screen:
     def reset(self):
         if st.EVENT_LOG:
             self.data = open("logs/event_logs/event_log_" + str(self.files.num_files('.../logs/event_logs')) + ".txt", "w")
-            self.data.write("Simulation %s on " % self.sim_type + time.ctime(time.time()) + "\n\n")
+            self.data.write("Simulation %s on " % self.sim_type + cm.clock.current_time() + "\n\n")
         else:
             self.data = None
         wld_dims, sim_type = sims.Simulation.pick_sim(self.SCREEN)
@@ -82,6 +72,9 @@ class Screen:
 
 
 def main():
+    # initializes pygame
+    pg.init()
+    pg.font.init()
 
     at.LoadAssets()
 
